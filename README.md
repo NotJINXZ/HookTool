@@ -59,7 +59,7 @@ UWT provides the following options in its main menu:
 
 ## Contributing
 
-Feel free to contribute to the project by opening issues or submitting pull requests on the [GitHub repository](https://github.com/NotJINXZ/uwt).
+Feel free to contribute to the project by opening issues or submitting pull requests on the [GitHub repository](https://github.com/NotJINXZ/uwt/pulls).
 
 ## License
 

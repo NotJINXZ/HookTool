@@ -56,12 +56,6 @@ class WHT:
     
     
     async def send(self, **kwargs):
-        """
-         Send a message to Discord. This is a coroutine. The message will be sent in a thread that is spawned to receive the message.
-         
-         
-         @return A tuple ( success_message exception ) where success_message is True if the message was sent False
-        """
         try:
             async with aiohttp.ClientSession() as session:
                 webhook: discord.Webhook = discord.Webhook.from_url(self.webhook_url, session=session)
