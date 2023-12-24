@@ -529,11 +529,14 @@ async def main():
                     response, e = await webhook.delete()
                     if response:
                         util.log("success", "Successfully deleted webhook.")
+                        input(util.log("info", "Press enter to continue...", False))
+                        break
+
                     else:
                         util.log("error", f"An error has occured: {e}.")
 
-                    input(util.log("info", "Press enter to continue...", False))
-                continue
+                        input(util.log("info", "Press enter to continue...", False))
+                        continue
             
             elif option == 4:
                 data = await webhook.get()
@@ -553,25 +556,24 @@ async def main():
                 util.log("info", f"Type: {wtype} ({wtypestr})")
                 util.log("info", f"ID: {data['id']}")
                 util.log("info", f"Token: {data['token']}")
-                util.log("info", f"Avatar: {data['avatar']}")
                 util.log("info", f"Guild ID: {data['guild_id']}")
                 util.log("info", f"Channel ID: {data['channel_id']}")
                 util.log("info", f"Application ID: {data['application_id']}")
-                util.log("info", f"Avatar: {data['avatar']}")
+                util.log("info", f"Avatar: {data['avatar']} (https://cdn.discordapp.com/avatars/{data['id']}/{data['avatar']}.png)")
                 if wtype in [1, 2]:
                     print("\n")
                     util.log("info", f"User Information:")
                     util.log("info", f"Username: {data['user']['username']}")
                     util.log("info", f"Discriminator: {data['user']['discriminator']}")
                     util.log("info", f"ID: {data['user']['id']}")
-                    util.log("info", f"Avatar: {data['user']['avatar']}")
+                    util.log("info", f"Avatar: {data['user']['avatar']} (https://cdn.discordapp.com/avatars/{data['user']['id']}/{data['user']['avatar']}.png)")
                     util.log("info", f"Public Flags: {data['user']['public_flags']}")
                 if wtype == 2:
                     print("\n")
                     util.log("info", f"Source Information:")
                     util.log("info", f"Guild ID: {data['source_guild']['id']}")
                     util.log("info", f"Guild Name: {data['source_guild']['name']}")
-                    util.log("info", f"Guild Icon: {data['source_guild']['icon']}")
+                    util.log("info", f"Guild Icon: {data['source_guild']['icon']} (https://cdn.discordapp.com/icons/{data['source_guild']['id']}/{data['source_guild']['icon']}.png)")
                     util.log("info", f"Guild ID: {data['source_guild']['id']}")
                     util.log("info", f"Channel ID: {data['source_channel']['id']}")
                     util.log("info", f"Channel Name: {data['source_channel']['name']}")
