@@ -62,6 +62,24 @@ class Utilities:
         if message:
             print(message)
         return
+
+    def title(self, title: str = None):
+        """Set the terminal title on various platforms.
+
+        Args:
+            title (str): The new title for the terminal.
+
+        Raises:
+            RuntimeError: If setting the terminal title is not supported on the current system.
+        """
+        system = platform.system()
+        if system == "Windows":
+            os.system(f'title {title}')
+        elif system in ["Linux", "Darwin"]:  # Unix/Linux/MacOS
+            print(f"\033]0;{title}\007", end='', flush=True)
+        else:
+            pass
+            #raise RuntimeError(f"Setting the terminal title is not supported on {system}.")
     
     def menu(self, *args):
         """Create a text menu.
@@ -199,6 +217,7 @@ async def main():
     
     util.clear(util.log("info", "Loading...", False))
     ### Loading shit will go here ###
+    util.title(f"UWT - Not logged in")
     os.makedirs("saves", exist_ok=True)
     os.makedirs("saves\\embeds", exist_ok=True)
     os.makedirs("saves\\plaintext", exist_ok=True)
@@ -206,11 +225,15 @@ async def main():
     
     while True:
         # util.clear()
+        util.title(f"UWT - Logging in...")
         webhook = WHT(input(util.log("info", "Enter your webhook url: ", False)))
         if webhook.webhook_url != "bypass":
             if not await webhook.validate():
                 util.log("error", "The webhook you provided is invalid.")
                 continue
+            else:
+                data = await webhook.get()
+                util.title(f"UWT - Logged in as {data['name']}")
             
 
         while True:
