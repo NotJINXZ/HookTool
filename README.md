@@ -12,6 +12,8 @@ UWT, short for Unnamed Webhook Tool, is a Python script that provides a command-
 
 - **Message Types:** Users can send both regular and embedded messages to Discord channels.
 
+- **Message Saving:** UWT allows users to save and reuse messages for future interactions, enhancing convenience and efficiency.
+
 - **Validation:** UWT includes validation checks for Discord webhook URLs to ensure that users are working with valid webhooks.
 
 - **Information Retrieval:** UWT provides detailed information about a Discord webhook, including general information, user information, and source information (for channel follower webhooks).
