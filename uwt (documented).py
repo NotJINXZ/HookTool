@@ -6,6 +6,7 @@ from pystyle import Colors, Center
 import time
 import os
 import re
+import json
 
 class Utilities:
     def log(self, log_type: str, message: str, should_print: bool = True):
@@ -190,11 +191,17 @@ class WHT:
             except Exception as e:
                 return False, e
     
+message = None
+
 async def main():
+    global message
     util = Utilities()
     
     util.clear(util.log("info", "Loading...", False))
     ### Loading shit will go here ###
+    os.makedirs("saves", exist_ok=True)
+    os.makedirs("saves\\embeds", exist_ok=True)
+    os.makedirs("saves\\plaintext", exist_ok=True)
     util.clear()
     
     while True:
@@ -236,19 +243,100 @@ async def main():
             
                         print(Center.XCenter(util.log("error", "That option is not valid, Please try again.", False), 50))
                         time.sleep(2.5)
+                        
+                    if option in [1, 2]:
+                        while True:
+                            choice = input(Center.XCenter(util.log("info", "Would you like to load a saved message? (y/n): ", False), 50)).lower()
+                            if choice == "y":
+                                break
+                            elif choice == "n":
+                                break
+                        
+                        util.clear()
+                        if choice == "y":
+                            path = "saves\\plaintext" if option == 1 else "saves\\embeds"
+
+                            while True:
+                                menu1, options1 = util.menu(*os.listdir(path), "Go Back")
+                                util.clear()
+                                print(Center.Center(menu1, 50) + "\n "*3)
+                                try:
+                                    option1 = int(input(Center.XCenter(util.log("info", "Enter your option: ", False), 50))) - 1
+                                except ValueError:
+                                    option1 = "Invalid Placeholder"
+                                if option1 not in range(len(options1)):
+                                    util.clear()
+                                    print(Center.Center(menu1, 50) + "\n "*3)
+
+                                    print(Center.XCenter(util.log("error", "That option is not valid, Please try again.", False), 50))
+                                    time.sleep(2.5)
+                                    continue
+                                                        
+                                with open(os.path.join(path, os.listdir(path)[option1]), "r+") as file:
+                                    util.clear()
+                                    message = json.load(file)
+                                    ignored = ["type"]
+                                    for a in message:
+                                        if a in ignored:
+                                            continue
+                                        
+                                        util.log("info", f"{a}: {message[a]}")
+                                    
+                                    file.close()
+                                    print("\n")
+                                    
+                                while True:
+                                    choice = input(util.log("warn", "Is this the correct message? (y/n): ", False), 50).lower()
+                                    if choice == "y":
+                                        break
+                                    elif choice == "n":
+                                        continue
                     
                     if option == 1:
-                        response, e = await webhook.send(content=input(util.log("info", "Message Content: ", False)))
+                        if not message:
+                            content = input(util.log("info", "Message Content: ", False))
+                            while True:
+                                choice = input(util.log("info", "Would you like to save this message for future use? (y/n): ", False)).lower()
+                                if choice == "y":
+                                    file = "saves\\plaintext\\{}.json".format(len(os.listdir('saves\\plaintext')))
+                                    with open(file, "w") as w:
+                                        data = {}
+                                        data["content"] = content
+                                        json.dump(data, w)
+                                        w.close()
+                                    break
+                                elif choice == "n":
+                                    break
+                        else:
+                            content = message["content"]
+                            
+                        response, e = await webhook.send(content=content)
                         if response:
                             util.log("success", "Successfully sent message.")
                         else:
                             util.log("error", f"An error has occured: {e}.")
                     
                     elif option == 2:
-                        embed = discord.Embed()
-                        embed.title = input(util.log("info", "Embed Title: ", False))
-                        embed.description = input(util.log("info", "Embed Description: ", False))
-                        content = input(util.log("info", "Message Content: ", False))
+                        if not message:
+                            embed = discord.Embed()
+                            embed.title = input(util.log("info", "Embed Title: ", False))
+                            embed.description = input(util.log("info", "Embed Description: ", False))
+                            content = input(util.log("info", "Message Content: ", False))
+                            while True:
+                                choice = input(util.log("info", "Would you like to save this message for future use? (y/n): ", False)).lower()
+                                if choice == "y":
+                                    file = "saves\\embeds\\{}.json".format(len(os.listdir('saves\\embeds')))
+                                    with open(file, "w") as w:
+                                        data = embed.to_dict()
+                                        data["content"] = content
+                                        json.dump(data, w)
+                                        w.close()
+                                    break
+                                elif choice == "n":
+                                    break
+                        else:
+                            embed = discord.Embed().from_dict(message)
+                            content = message["content"]
                         
                         response, e = await webhook.send(embed=embed, content=content)
                         if response:
@@ -263,6 +351,7 @@ async def main():
                     input(util.log("info", "Press enter to continue...", False))
             elif option == 2:
                 while True:
+                    message = None
                     util.clear()
                     menu, options = util.menu("Regular Message", "Embeded Message", "Go Back")
                     print(Center.Center(menu, 50) + "\n "*3)
@@ -276,6 +365,54 @@ async def main():
             
                         print(Center.XCenter(util.log("error", "That option is not valid, Please try again.", False), 50))
                         time.sleep(2.5)
+                                
+                    if option in [1, 2]:
+                        while True:
+                            choice = input(Center.XCenter(util.log("info", "Would you like to load a saved message? (y/n): ", False), 50)).lower()
+                            if choice == "y":
+                                break
+                            elif choice == "n":
+                                break
+                        
+                        util.clear()
+                        if choice == "y":
+                            path = "saves\\plaintext" if option == 1 else "saves\\embeds"
+
+                            while True:
+                                menu1, options1 = util.menu(*os.listdir(path), "Go Back")
+                                util.clear()
+                                print(Center.Center(menu1, 50) + "\n "*3)
+                                try:
+                                    option1 = int(input(Center.XCenter(util.log("info", "Enter your option: ", False), 50))) - 1
+                                except ValueError:
+                                    option1 = "Invalid Placeholder"
+                                if option1 not in range(len(options1)):
+                                    util.clear()
+                                    print(Center.Center(menu1, 50) + "\n "*3)
+
+                                    print(Center.XCenter(util.log("error", "That option is not valid, Please try again.", False), 50))
+                                    time.sleep(2.5)
+                                    continue
+                                                        
+                                with open(os.path.join(path, os.listdir(path)[option1]), "r+") as file:
+                                    util.clear()
+                                    message = json.load(file)
+                                    ignored = ["type"]
+                                    for a in message:
+                                        if a in ignored:
+                                            continue
+                                        
+                                        util.log("info", f"{a}: {message[a]}")
+                                    
+                                    file.close()
+                                    print("\n")
+                                    
+                                while True:
+                                    choice = input(util.log("warn", "Is this the correct message? (y/n): ", False), 50).lower()
+                                    if choice == "y":
+                                        break
+                                    elif choice == "n":
+                                        continue
                     
                     if option == 1:
                         while True:
@@ -284,7 +421,23 @@ async def main():
                                 break
                             except: pass
                         
-                        content = input(util.log("info", "Message Content: ", False)) 
+                        if not message:
+                            content = input(util.log("info", "Message Content: ", False))
+                            while True:
+                                choice = input(util.log("info", "Would you like to save this message for future use? (y/n): ", False)).lower()
+                                if choice == "y":
+                                    file = "saves\\plaintext\\{}.json".format(len(os.listdir('saves\\plaintext')))
+                                    with open(file, "w") as w:
+                                        data = {}
+                                        data["content"] = content
+                                        json.dump(data, w)
+                                        w.close()
+                                    break
+                                elif choice == "n":
+                                    break
+                        else:
+                            content = message["content"]
+                            
                         success = 0
                         for i in range(iterations):
                             response, e = await webhook.send(content=content)
@@ -304,11 +457,27 @@ async def main():
                                 iterations = int(input(util.log("info", "Number of messages to send: ", False)))
                                 break
                             except: pass
-                            
-                        embed = discord.Embed()
-                        embed.title = input(util.log("info", "Embed Title: ", False))
-                        embed.description = input(util.log("info", "Embed Description: ", False))
-                        content = input(util.log("info", "Message Content: ", False))
+                        
+                        if not message:
+                            embed = discord.Embed()
+                            embed.title = input(util.log("info", "Embed Title: ", False))
+                            embed.description = input(util.log("info", "Embed Description: ", False))
+                            content = input(util.log("info", "Message Content: ", False))
+                            while True:
+                                choice = input(util.log("info", "Would you like to save this message for future use? (y/n): ", False)).lower()
+                                if choice == "y":
+                                    file = "saves\\embeds\\{}.json".format(len(os.listdir('saves\\embeds')))
+                                    with open(file, "w") as w:
+                                        data = embed.to_dict()
+                                        data["content"] = content
+                                        json.dump(data, w)
+                                        w.close()
+                                    break
+                                elif choice == "n":
+                                    break
+                        else:
+                            embed = discord.Embed().from_dict(message)
+                            content = message["content"]
                         
                         success = 0
                         for i in range(iterations):
@@ -327,13 +496,20 @@ async def main():
                         break
             
             elif option == 3:
-                response, e = await webhook.delete()
-                if response:
-                    util.log("success", "Successfully deleted webhook.")
-                else:
-                    util.log("error", f"An error has occured: {e}.")
+                while True:
+                    choice = input(util.log("warn", "Are you sure you want to delete this webhook? (y/n): ", False)).lower()
+                    if choice == "y":
+                        break
+                    elif choice == "n":
+                        break
+                if choice == "y": 
+                    response, e = await webhook.delete()
+                    if response:
+                        util.log("success", "Successfully deleted webhook.")
+                    else:
+                        util.log("error", f"An error has occured: {e}.")
 
-                input(util.log("info", "Press enter to continue...", False))
+                    input(util.log("info", "Press enter to continue...", False))
                 continue
             
             elif option == 4:
