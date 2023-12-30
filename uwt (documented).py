@@ -1,12 +1,13 @@
 import discord
-import aiohttp
-import asyncio
-import platform
+from aiohttp import ClientSession
+from asyncio import run as Run
+from platform import system as System
 from pystyle import Colors, Center
-import time
+from time import sleep as Sleep
+from time import strftime
 import os
-import re
-import json
+from re import compile
+from json import load, dump
 
 class Utilities:
     def log(self, log_type: str, message: str, should_print: bool = True):
@@ -33,7 +34,7 @@ class Utilities:
         
         if log_type not in options:
             raise ValueError("Invalid type for logging.")
-        output = f"{options[log_type]} {Colors.gray}[{Colors.reset}{time.strftime('%H:%M:%S')}{Colors.gray}]{Colors.reset}: {message}"
+        output = f"{options[log_type]} {Colors.gray}[{Colors.reset}{strftime('%H:%M:%S')}{Colors.gray}]{Colors.reset}: {message}"
 
         if should_print:
             print(output)
@@ -51,7 +52,7 @@ class Utilities:
             RuntimeError: If clearing the screen is not supported on the current system.
         """
         
-        system = platform.system()
+        system = System()
         if system in ["Linux", "Darwin"]:  # Unix/Linux/MacOS
             os.system('clear')
         elif system == "Windows":
@@ -72,7 +73,7 @@ class Utilities:
         Raises:
             RuntimeError: If setting the terminal title is not supported on the current system.
         """
-        system = platform.system()
+        system = System()
         if system == "Windows":
             os.system(f'title {title}')
         elif system in ["Linux", "Darwin"]:  # Unix/Linux/MacOS
@@ -117,7 +118,7 @@ class WHT:
         """
         
         try:
-            async with aiohttp.ClientSession() as session:
+            async with ClientSession() as session:
                 webhook: discord.Webhook = discord.Webhook.from_url(self.webhook_url, session=session)
                 await webhook.send(**kwargs)
             return True, None
@@ -136,11 +137,11 @@ class WHT:
         
         webhook_url = webhook_url or self.webhook_url
 
-        if not re.compile(r'^https://(?:ptb\.|canary\.)?discord\.com/api/webhooks/').match(webhook_url):
+        if not compile(r'^https://(?:ptb\.|canary\.)?discord\.com/api/webhooks/').match(webhook_url):
             return False
         
         
-        async with aiohttp.ClientSession() as session:
+        async with ClientSession() as session:
             try:
                 async with session.get(webhook_url) as response:
                     await session.close()
@@ -160,7 +161,7 @@ class WHT:
         
         webhook_url = webhook_url or self.webhook_url
      
-        async with aiohttp.ClientSession() as session:
+        async with ClientSession() as session:
             try:
                 async with session.delete(webhook_url) as response:
                     await session.close()
@@ -180,7 +181,7 @@ class WHT:
         
         webhook_url = webhook_url or self.webhook_url
      
-        async with aiohttp.ClientSession() as session:
+        async with ClientSession() as session:
             try:
                 async with session.get(webhook_url) as response:
                     await session.close()
@@ -201,7 +202,7 @@ class WHT:
         
         webhook_url = webhook_url or self.webhook_url
 
-        async with aiohttp.ClientSession() as session:
+        async with ClientSession() as session:
             try:
                 async with session.patch(webhook_url, json=new_data) as response:
                     await session.close()
@@ -249,7 +250,7 @@ async def main():
                 print(Center.Center(menu, 50) + "\n "*3)
     
                 print(Center.XCenter(util.log("error", "That option is not valid, Please try again.", False), 50))
-                time.sleep(2.5)
+                Sleep(2.5)
             
             if option == 1:
                 while True:
@@ -265,7 +266,7 @@ async def main():
                         print(Center.Center(menu, 50) + "\n "*3)
             
                         print(Center.XCenter(util.log("error", "That option is not valid, Please try again.", False), 50))
-                        time.sleep(2.5)
+                        Sleep(2.5)
                         
                     if option in [1, 2]:
                         while True:
@@ -292,12 +293,12 @@ async def main():
                                     print(Center.Center(menu1, 50) + "\n "*3)
 
                                     print(Center.XCenter(util.log("error", "That option is not valid, Please try again.", False), 50))
-                                    time.sleep(2.5)
+                                    Sleep(2.5)
                                     continue
                                                         
                                 with open(os.path.join(path, os.listdir(path)[option1]), "r+") as file:
                                     util.clear()
-                                    message = json.load(file)
+                                    message = load(file)
                                     ignored = ["type"]
                                     for a in message:
                                         if a in ignored:
@@ -325,7 +326,7 @@ async def main():
                                     with open(file, "w") as w:
                                         data = {}
                                         data["content"] = content
-                                        json.dump(data, w)
+                                        dump(data, w)
                                         w.close()
                                     break
                                 elif choice == "n":
@@ -352,7 +353,7 @@ async def main():
                                     with open(file, "w") as w:
                                         data = embed.to_dict()
                                         data["content"] = content
-                                        json.dump(data, w)
+                                        dump(data, w)
                                         w.close()
                                     break
                                 elif choice == "n":
@@ -387,7 +388,7 @@ async def main():
                         print(Center.Center(menu, 50) + "\n "*3)
             
                         print(Center.XCenter(util.log("error", "That option is not valid, Please try again.", False), 50))
-                        time.sleep(2.5)
+                        Sleep(2.5)
                                 
                     if option in [1, 2]:
                         while True:
@@ -414,12 +415,12 @@ async def main():
                                     print(Center.Center(menu1, 50) + "\n "*3)
 
                                     print(Center.XCenter(util.log("error", "That option is not valid, Please try again.", False), 50))
-                                    time.sleep(2.5)
+                                    Sleep(2.5)
                                     continue
                                                         
                                 with open(os.path.join(path, os.listdir(path)[option1]), "r+") as file:
                                     util.clear()
-                                    message = json.load(file)
+                                    message = load(file)
                                     ignored = ["type"]
                                     for a in message:
                                         if a in ignored:
@@ -453,7 +454,7 @@ async def main():
                                     with open(file, "w") as w:
                                         data = {}
                                         data["content"] = content
-                                        json.dump(data, w)
+                                        dump(data, w)
                                         w.close()
                                     break
                                 elif choice == "n":
@@ -493,7 +494,7 @@ async def main():
                                     with open(file, "w") as w:
                                         data = embed.to_dict()
                                         data["content"] = content
-                                        json.dump(data, w)
+                                        dump(data, w)
                                         w.close()
                                     break
                                 elif choice == "n":
@@ -601,4 +602,4 @@ async def main():
                 break
             
 if __name__ == "__main__":
-    asyncio.run(main())
+    Run(main())

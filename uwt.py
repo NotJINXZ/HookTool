@@ -12,24 +12,31 @@ _D=None
 _C=True
 _B=False
 _A='info'
-import discord,aiohttp,asyncio,platform
+import discord
+from aiohttp import ClientSession
+from asyncio import run as Run
+from platform import system as System
 from pystyle import Colors,Center
-import time,os,re,json
+from time import sleep as Sleep
+from time import strftime
+import os
+from re import compile
+from json import load,dump
 class Utilities:
 	def log(self,log_type,message,should_print=_C):
 		'Log messages with different types.\n\n        Args:\n            log_type (str): Type of log message (info, warn, success, error).\n            message (str): The log message.\n            should_print (bool, optional): Whether to print the log message. Defaults to True.\n\n        Raises:\n            ValueError: If an invalid log type is provided.\n\n        Returns:\n            str: The formatted log message.\n        ';options={_A:f"{Colors.gray}[{Colors.blue}!{Colors.gray}]{Colors.reset}",_G:f"{Colors.gray}[{Colors.yellow}?{Colors.gray}]{Colors.reset}",_F:f"{Colors.gray}[{Colors.green}+{Colors.gray}]{Colors.reset}",_E:f"{Colors.gray}[{Colors.red}-{Colors.gray}]{Colors.reset}"}
 		if log_type not in options:raise ValueError('Invalid type for logging.')
-		output=f"{options[log_type]} {Colors.gray}[{Colors.reset}{time.strftime('%H:%M:%S')}{Colors.gray}]{Colors.reset}: {message}"
+		output=f"{options[log_type]} {Colors.gray}[{Colors.reset}{strftime('%H:%M:%S')}{Colors.gray}]{Colors.reset}: {message}"
 		if should_print:print(output);return
 		else:return output
 	def clear(self,message=_D):
-		'Clear the console screen.\n\n        Args:\n            message (str, optional): Message to print after clearing. Defaults to None.\n\n        Raises:\n            RuntimeError: If clearing the screen is not supported on the current system.\n        ';system=platform.system()
+		'Clear the console screen.\n\n        Args:\n            message (str, optional): Message to print after clearing. Defaults to None.\n\n        Raises:\n            RuntimeError: If clearing the screen is not supported on the current system.\n        ';system=System()
 		if system in['Linux',_H]:os.system('clear')
 		elif system==_I:os.system('cls')
 		else:raise RuntimeError(f"Clearing the screen is not supported on {system}.")
 		if message:print(message)
 	def title(self,title=_D):
-		'Set the terminal title on various platforms.\n\n        Args:\n            title (str): The new title for the terminal.\n\n        Raises:\n            RuntimeError: If setting the terminal title is not supported on the current system.\n        ';system=platform.system()
+		'Set the terminal title on various platforms.\n\n        Args:\n            title (str): The new title for the terminal.\n\n        Raises:\n            RuntimeError: If setting the terminal title is not supported on the current system.\n        ';system=System()
 		if system==_I:os.system(f"title {title}")
 		elif system in['Linux',_H]:print(f"]0;{title}\a",end='',flush=_C)
 		else:0
@@ -44,32 +51,32 @@ class WHT:
 	async def send(self,**kwargs):
 		'Send a message to the Discord webhook.\n\n        Returns:\n            tuple: A tuple containing a boolean indicating success and an error message (if any).\n        '
 		try:
-			async with aiohttp.ClientSession()as session:webhook=discord.Webhook.from_url(self.webhook_url,session=session);await webhook.send(**kwargs)
+			async with ClientSession()as session:webhook=discord.Webhook.from_url(self.webhook_url,session=session);await webhook.send(**kwargs)
 			return _C,_D
 		except Exception as e:return _B,e
 	async def validate(self,webhook_url=_D):
 		'Validate a Discord webhook URL.\n\n        Args:\n            webhook_url (str, optional): Discord webhook URL to validate. Defaults to None.\n\n        Returns:\n            bool: True if the URL is valid, False otherwise.\n        ';webhook_url=webhook_url or self.webhook_url
-		if not re.compile('^https://(?:ptb\\.|canary\\.)?discord\\.com/api/webhooks/').match(webhook_url):return _B
-		async with aiohttp.ClientSession()as session:
+		if not compile('^https://(?:ptb\\.|canary\\.)?discord\\.com/api/webhooks/').match(webhook_url):return _B
+		async with ClientSession()as session:
 			try:
 				async with session.get(webhook_url)as response:await session.close();return _C if response.status==200 else _B
 			except Exception:return _B
 	async def delete(self,webhook_url=_D):
 		'Delete a Discord webhook.\n\n        Args:\n            webhook_url (str, optional): Discord webhook URL to delete. Defaults to None.\n\n        Returns:\n            tuple: A tuple containing a boolean indicating success and an error message (if any).\n        ';webhook_url=webhook_url or self.webhook_url
-		async with aiohttp.ClientSession()as session:
+		async with ClientSession()as session:
 			try:
 				async with session.delete(webhook_url)as response:await session.close()
 				return _C,_D
 			except Exception as e:return _B,e
 	async def get(self,webhook_url=_D):
 		'Retrieve information from a Discord webhook.\n\n        Args:\n            webhook_url (str, optional): Discord webhook URL to get information from. Defaults to None.\n\n        Returns:\n            dict: JSON data containing information from the webhook.\n        ';webhook_url=webhook_url or self.webhook_url
-		async with aiohttp.ClientSession()as session:
+		async with ClientSession()as session:
 			try:
 				async with session.get(webhook_url)as response:await session.close();return await response.json()
 			except Exception as e:return
 	async def update(self,new_data,webhook_url=_D):
 		'Update a Discord webhook with new data.\n\n        Args:\n            new_data (dict): New data to update the webhook.\n            webhook_url (str, optional): Discord webhook URL to update. Defaults to None.\n\n        Returns:\n            tuple: A tuple containing a boolean indicating success and an error message (if any).\n        ';webhook_url=webhook_url or self.webhook_url
-		async with aiohttp.ClientSession()as session:
+		async with ClientSession()as session:
 			try:
 				async with session.patch(webhook_url,json=new_data)as response:await session.close()
 				return _C,_D
@@ -86,13 +93,13 @@ async def main():
 			util.clear();menu,options=util.menu('Send Message','Spam Message','Delete Webhook','Webhook Information','Change Webhook Information','Logout');print(Center.Center(menu,50)+B*3)
 			try:option=int(input(Center.XCenter(util.log(_A,L,_B),50)))
 			except ValueError:option=M
-			if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));time.sleep(2.5)
+			if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5)
 			if option==1:
 				while _C:
 					util.clear();menu,options=util.menu(X,Y,P);print(Center.Center(menu,50)+B*3)
 					try:option=int(input(Center.XCenter(util.log(_A,L,_B),50)))
 					except ValueError:option=M
-					if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));time.sleep(2.5)
+					if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5)
 					if option in[1,2]:
 						while _C:
 							choice=input(Center.XCenter(util.log(_A,Z,_B),50)).lower()
@@ -105,9 +112,9 @@ async def main():
 								menu1,options1=util.menu(*os.listdir(path),P);util.clear();print(Center.Center(menu1,50)+B*3)
 								try:option1=int(input(Center.XCenter(util.log(_A,L,_B),50)))-1
 								except ValueError:option1=M
-								if option1 not in range(len(options1)):util.clear();print(Center.Center(menu1,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));time.sleep(2.5);continue
+								if option1 not in range(len(options1)):util.clear();print(Center.Center(menu1,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5);continue
 								with open(os.path.join(path,os.listdir(path)[option1]),'r+')as file:
-									util.clear();message=json.load(file);ignored=[W]
+									util.clear();message=load(file);ignored=[W]
 									for a in message:
 										if a in ignored:continue
 										util.log(_A,f"{a}: {message[a]}")
@@ -123,7 +130,7 @@ async def main():
 								choice=input(util.log(_A,R,_B)).lower()
 								if choice==A:
 									file=c.format(len(os.listdir(K)))
-									with open(file,S)as w:data={};data[E]=content;json.dump(data,w);w.close()
+									with open(file,S)as w:data={};data[E]=content;dump(data,w);w.close()
 									break
 								elif choice==C:break
 						else:content=message[E]
@@ -137,7 +144,7 @@ async def main():
 								choice=input(util.log(_A,R,_B)).lower()
 								if choice==A:
 									file=g.format(len(os.listdir(J)))
-									with open(file,S)as w:data=embed.to_dict();data[E]=content;json.dump(data,w);w.close()
+									with open(file,S)as w:data=embed.to_dict();data[E]=content;dump(data,w);w.close()
 									break
 								elif choice==C:break
 						else:embed=discord.Embed().from_dict(message);content=message[E]
@@ -151,7 +158,7 @@ async def main():
 					message=_D;util.clear();menu,options=util.menu(X,Y,P);print(Center.Center(menu,50)+B*3)
 					try:option=int(input(Center.XCenter(util.log(_A,L,_B),50)))
 					except ValueError:option=M
-					if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));time.sleep(2.5)
+					if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5)
 					if option in[1,2]:
 						while _C:
 							choice=input(Center.XCenter(util.log(_A,Z,_B),50)).lower()
@@ -164,9 +171,9 @@ async def main():
 								menu1,options1=util.menu(*os.listdir(path),P);util.clear();print(Center.Center(menu1,50)+B*3)
 								try:option1=int(input(Center.XCenter(util.log(_A,L,_B),50)))-1
 								except ValueError:option1=M
-								if option1 not in range(len(options1)):util.clear();print(Center.Center(menu1,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));time.sleep(2.5);continue
+								if option1 not in range(len(options1)):util.clear();print(Center.Center(menu1,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5);continue
 								with open(os.path.join(path,os.listdir(path)[option1]),'r+')as file:
-									util.clear();message=json.load(file);ignored=[W]
+									util.clear();message=load(file);ignored=[W]
 									for a in message:
 										if a in ignored:continue
 										util.log(_A,f"{a}: {message[a]}")
@@ -185,7 +192,7 @@ async def main():
 								choice=input(util.log(_A,R,_B)).lower()
 								if choice==A:
 									file=c.format(len(os.listdir(K)))
-									with open(file,S)as w:data={};data[E]=content;json.dump(data,w);w.close()
+									with open(file,S)as w:data={};data[E]=content;dump(data,w);w.close()
 									break
 								elif choice==C:break
 						else:content=message[E]
@@ -205,7 +212,7 @@ async def main():
 								choice=input(util.log(_A,R,_B)).lower()
 								if choice==A:
 									file=g.format(len(os.listdir(J)))
-									with open(file,S)as w:data=embed.to_dict();data[E]=content;json.dump(data,w);w.close()
+									with open(file,S)as w:data=embed.to_dict();data[E]=content;dump(data,w);w.close()
 									break
 								elif choice==C:break
 						else:embed=discord.Embed().from_dict(message);content=message[E]
@@ -244,4 +251,4 @@ async def main():
 					else:util.log(_E,f"An error has occured: {e}.")
 				print(D);input(util.log(_A,G,_B))
 			elif option==0:util.clear();break
-if __name__=='__main__':asyncio.run(main())
+if __name__=='__main__':Run(main())
