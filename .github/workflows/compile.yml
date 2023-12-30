@@ -25,7 +25,7 @@ jobs:
 
       - name: Compile Python Script
         run: |
-          nuitka --standalone uwt.py
+          $HOME/.local/bin/nuitka --standalone uwt.py
 
       - name: Calculate SHA256 Checksum
         run: |
