@@ -2,3 +2,5 @@ saves
 minify.py
 uwt.build
 uwt.dist
+uwt.exe
+uwt.onefile-build
