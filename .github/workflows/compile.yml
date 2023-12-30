@@ -28,11 +28,11 @@ jobs:
 
       - name: Compile Python Script
         run: |
-          python -m nuitka --standalone uwt.py
+          python -m nuitka --standalone ./uwt.py
 
       - name: Calculate SHA256 Checksum
         run: |
-          sha256sum uwt.dist/uwt > uwt.dist/uwt.sha256
+          sha256sum ./uwt.dist/uwt > ./uwt.dist/uwt.sha256
 
       - name: Create Release
         id: create_release
@@ -49,11 +49,11 @@ jobs:
             
             - GPG Signature:
               ```bash
-              gpg --verify uwt.dist/uwt
+              gpg --verify ./uwt.dist/uwt
               ```
             - SHA256 Checksum:
               ```bash
-              cat uwt.dist/uwt.sha256
+              cat ./uwt.dist/uwt.sha256
               ```
 
       - name: Upload Release Asset
@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: uwt.dist/uwt
+          asset_path: ./uwt.dist/uwt
           asset_name: uwt
           asset_content_type: application/octet-stream
 
@@ -69,6 +69,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: uwt.dist/uwt.sha256
+          asset_path: ./uwt.dist/uwt.sha256
           asset_name: uwt.sha256
           asset_content_type: application/octet-stream
