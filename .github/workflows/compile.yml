@@ -32,7 +32,7 @@ jobs:
 
       - name: Calculate SHA256 Checksum
         run: |
-          sha256sum ./uwt.dist/uwt.exe > ./uwt.dist/uwt.sha256
+          sha256sum ./uwt.bin/uwt.exe > ./uwt.bin/uwt.sha256
 
       - name: Create Release
         id: create_release
@@ -49,11 +49,11 @@ jobs:
             
             - GPG Signature:
               ```bash
-              gpg --verify ./uwt.dist/uwt.exe
+              gpg --verify ./uwt.bin/uwt.exe
               ```
             - SHA256 Checksum:
               ```bash
-              cat ./uwt.dist/uwt.sha256
+              cat ./uwt.bin/uwt.sha256
               ```
 
       - name: Upload Release Asset
@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./uwt.dist/uwt.exe
+          asset_path: ./uwt.bin/uwt.exe
           asset_name: uwt
           asset_content_type: application/octet-stream
 
@@ -69,6 +69,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./uwt.dist/uwt.sha256
+          asset_path: ./uwt.bin/uwt.sha256
           asset_name: uwt.sha256
           asset_content_type: application/octet-stream
