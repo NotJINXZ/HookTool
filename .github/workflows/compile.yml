@@ -24,11 +24,11 @@ jobs:
           pip install nuitka
 
       - name: Verify Nuitka Installation
-        run: nuitka --version
+        run: python -m nuitka --version
 
       - name: Compile Python Script
         run: |
-          nuitka --standalone uwt.py
+          python -m nuitka --standalone uwt.py
 
       - name: Calculate SHA256 Checksum
         run: |
