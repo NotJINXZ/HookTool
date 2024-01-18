@@ -1,0 +1,1 @@
+python -m nuitka --output-filename=uwt --onefile --onefile-tempdir-spec=./uwt_cache --standalone --remove-output --no-pyi-file --assume-yes-for-downloads --include-package=pystyle --include-package=aiohttp --include-package=discord --include-package=asyncio --output-dir=output uwt.py

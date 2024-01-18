@@ -22,6 +22,7 @@ from time import strftime
 import os
 from re import compile
 from json import load,dump
+import subprocess,sys
 class Utilities:
 	def log(self,log_type,message,should_print=_C):
 		'Log messages with different types.\n\n        Args:\n            log_type (str): Type of log message (info, warn, success, error).\n            message (str): The log message.\n            should_print (bool, optional): Whether to print the log message. Defaults to True.\n\n        Raises:\n            ValueError: If an invalid log type is provided.\n\n        Returns:\n            str: The formatted log message.\n        ';options={_A:f"{Colors.gray}[{Colors.blue}!{Colors.gray}]{Colors.reset}",_G:f"{Colors.gray}[{Colors.yellow}?{Colors.gray}]{Colors.reset}",_F:f"{Colors.gray}[{Colors.green}+{Colors.gray}]{Colors.reset}",_E:f"{Colors.gray}[{Colors.red}-{Colors.gray}]{Colors.reset}"}
@@ -83,145 +84,161 @@ class WHT:
 			except Exception as e:return _B,e
 message=_D
 async def main():
-	l='source_channel';k='icon';j='username';h='Number of messages to send: ';g='saves\\embeds\\{}.json';f='Embed Description: ';d='Embed Title: ';c='saves\\plaintext\\{}.json';b='Is this the correct message? (y/n): ';Z='Would you like to load a saved message? (y/n): ';Y='Embeded Message';X='Regular Message';W='type';V='avatar';U='s';T='Successfully sent message.';S='w';R='Would you like to save this message for future use? (y/n): ';Q='Message Content: ';P='Go Back';O='name';N='That option is not valid, Please try again.';M='Invalid Placeholder';L='Enter your option: ';K='saves\\plaintext';J='saves\\embeds';I='source_guild';H='user';G='Press enter to continue...';F='id';E='content';D='\n';C='n';B='\n ';A='y';global message;util=Utilities();util.clear(util.log(_A,'Loading...',_B));util.title(f"UWT - Not logged in");os.makedirs('saves',exist_ok=_C);os.makedirs(J,exist_ok=_C);os.makedirs(K,exist_ok=_C);util.clear()
+	m='source_channel';l='icon';k='username';j='Number of messages to send: ';h='saves\\embeds\\{}.json';g='Embed Description: ';f='Embed Title: ';d='saves\\plaintext\\{}.json';c='Is this the correct message? (y/n): ';b='Would you like to load a saved message? (y/n): ';Z='Embeded Message';Y='Regular Message';X='type';W='avatar';V='s';U='Successfully sent message.';T='w';S='Would you like to save this message for future use? (y/n): ';R='Message Content: ';Q='Go Back';P='uwt.exe';O='That option is not valid, Please try again.';N='Invalid Placeholder';M='Enter your option: ';L='saves\\plaintext';K='saves\\embeds';J='name';I='source_guild';H='user';G='Press enter to continue...';F='id';E='content';D='\n';C='n';B='\n ';A='y';global message;util=Utilities();util.clear(util.log(_A,'Loading...',_B))
+	if getattr(sys,'frozen',_B):
+		util.log(_A,'Checking Version...');github_api_url='https://api.github.com/repos/NotJINXZ/uwt/releases';version='1.0.0'
+		async with ClientSession()as session:
+			async with session.get(github_api_url)as response:releases=await response.json()
+			if releases:
+				latest_release=next((release for release in releases if not release.get('prerelease',_B)),_D)
+				if latest_release and latest_release['tag_name']!=version:
+					util.log(_G,'Version does not match.');asset_url=next((asset['browser_download_url']for asset in latest_release['assets']if asset[J].endswith('.exe')),_D)
+					if asset_url:
+						file_name=asset_url.split('/')[-1]
+						async with session.get(asset_url)as response:
+							data=await response.read()
+							with open(file_name,'wb')as file:file.write(data)
+						if os.path.exists(P):os.remove(P)
+						os.rename(file_name,P);subprocess.call([P])
+	util.title(f"UWT - Not logged in");os.makedirs('saves',exist_ok=_C);os.makedirs(K,exist_ok=_C);os.makedirs(L,exist_ok=_C);util.clear()
 	while _C:
 		util.title(f"UWT - Logging in...");webhook=WHT(input(util.log(_A,'Enter your webhook url: ',_B)))
 		if webhook.webhook_url!='bypass':
 			if not await webhook.validate():util.log(_E,'The webhook you provided is invalid.');continue
-			else:data=await webhook.get();util.title(f"UWT - Logged in as {data[O]}")
+			else:data=await webhook.get();util.title(f"UWT - Logged in as {data[J]}")
 		while _C:
 			util.clear();menu,options=util.menu('Send Message','Spam Message','Delete Webhook','Webhook Information','Change Webhook Information','Logout');print(Center.Center(menu,50)+B*3)
-			try:option=int(input(Center.XCenter(util.log(_A,L,_B),50)))
-			except ValueError:option=M
-			if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5)
+			try:option=int(input(Center.XCenter(util.log(_A,M,_B),50)))
+			except ValueError:option=N
+			if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,O,_B),50));Sleep(2.5)
 			if option==1:
 				while _C:
-					util.clear();menu,options=util.menu(X,Y,P);print(Center.Center(menu,50)+B*3)
-					try:option=int(input(Center.XCenter(util.log(_A,L,_B),50)))
-					except ValueError:option=M
-					if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5)
+					util.clear();menu,options=util.menu(Y,Z,Q);print(Center.Center(menu,50)+B*3)
+					try:option=int(input(Center.XCenter(util.log(_A,M,_B),50)))
+					except ValueError:option=N
+					if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,O,_B),50));Sleep(2.5)
 					if option in[1,2]:
 						while _C:
-							choice=input(Center.XCenter(util.log(_A,Z,_B),50)).lower()
+							choice=input(Center.XCenter(util.log(_A,b,_B),50)).lower()
 							if choice==A:break
 							elif choice==C:break
 						util.clear()
 						if choice==A:
-							path=K if option==1 else J
+							path=L if option==1 else K
 							while _C:
-								menu1,options1=util.menu(*os.listdir(path),P);util.clear();print(Center.Center(menu1,50)+B*3)
-								try:option1=int(input(Center.XCenter(util.log(_A,L,_B),50)))-1
-								except ValueError:option1=M
-								if option1 not in range(len(options1)):util.clear();print(Center.Center(menu1,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5);continue
+								menu1,options1=util.menu(*os.listdir(path),Q);util.clear();print(Center.Center(menu1,50)+B*3)
+								try:option1=int(input(Center.XCenter(util.log(_A,M,_B),50)))-1
+								except ValueError:option1=N
+								if option1 not in range(len(options1)):util.clear();print(Center.Center(menu1,50)+B*3);print(Center.XCenter(util.log(_E,O,_B),50));Sleep(2.5);continue
 								with open(os.path.join(path,os.listdir(path)[option1]),'r+')as file:
-									util.clear();message=load(file);ignored=[W]
+									util.clear();message=load(file);ignored=[X]
 									for a in message:
 										if a in ignored:continue
 										util.log(_A,f"{a}: {message[a]}")
 									file.close();print(D)
 								while _C:
-									choice=input(util.log(_G,b,_B),50).lower()
+									choice=input(util.log(_G,c,_B),50).lower()
 									if choice==A:break
 									elif choice==C:continue
 					if option==1:
 						if not message:
-							content=input(util.log(_A,Q,_B))
+							content=input(util.log(_A,R,_B))
 							while _C:
-								choice=input(util.log(_A,R,_B)).lower()
+								choice=input(util.log(_A,S,_B)).lower()
 								if choice==A:
-									file=c.format(len(os.listdir(K)))
-									with open(file,S)as w:data={};data[E]=content;dump(data,w);w.close()
+									file=d.format(len(os.listdir(L)))
+									with open(file,T)as w:data={};data[E]=content;dump(data,w);w.close()
 									break
 								elif choice==C:break
 						else:content=message[E]
 						response,e=await webhook.send(content=content)
-						if response:util.log(_F,T)
+						if response:util.log(_F,U)
 						else:util.log(_E,f"An error has occured: {e}.")
 					elif option==2:
 						if not message:
-							embed=discord.Embed();embed.title=input(util.log(_A,d,_B));embed.description=input(util.log(_A,f,_B));content=input(util.log(_A,Q,_B))
+							embed=discord.Embed();embed.title=input(util.log(_A,f,_B));embed.description=input(util.log(_A,g,_B));content=input(util.log(_A,R,_B))
 							while _C:
-								choice=input(util.log(_A,R,_B)).lower()
+								choice=input(util.log(_A,S,_B)).lower()
 								if choice==A:
-									file=g.format(len(os.listdir(J)))
-									with open(file,S)as w:data=embed.to_dict();data[E]=content;dump(data,w);w.close()
+									file=h.format(len(os.listdir(K)))
+									with open(file,T)as w:data=embed.to_dict();data[E]=content;dump(data,w);w.close()
 									break
 								elif choice==C:break
 						else:embed=discord.Embed().from_dict(message);content=message[E]
 						response,e=await webhook.send(embed=embed,content=content)
-						if response:util.log(_F,T)
+						if response:util.log(_F,U)
 						else:util.log(_E,f"An error has occured: {e}.")
 					elif option==0:break
 					print(D);input(util.log(_A,G,_B))
 			elif option==2:
 				while _C:
-					message=_D;util.clear();menu,options=util.menu(X,Y,P);print(Center.Center(menu,50)+B*3)
-					try:option=int(input(Center.XCenter(util.log(_A,L,_B),50)))
-					except ValueError:option=M
-					if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5)
+					message=_D;util.clear();menu,options=util.menu(Y,Z,Q);print(Center.Center(menu,50)+B*3)
+					try:option=int(input(Center.XCenter(util.log(_A,M,_B),50)))
+					except ValueError:option=N
+					if option not in range(len(options)):util.clear();print(Center.Center(menu,50)+B*3);print(Center.XCenter(util.log(_E,O,_B),50));Sleep(2.5)
 					if option in[1,2]:
 						while _C:
-							choice=input(Center.XCenter(util.log(_A,Z,_B),50)).lower()
+							choice=input(Center.XCenter(util.log(_A,b,_B),50)).lower()
 							if choice==A:break
 							elif choice==C:break
 						util.clear()
 						if choice==A:
-							path=K if option==1 else J
+							path=L if option==1 else K
 							while _C:
-								menu1,options1=util.menu(*os.listdir(path),P);util.clear();print(Center.Center(menu1,50)+B*3)
-								try:option1=int(input(Center.XCenter(util.log(_A,L,_B),50)))-1
-								except ValueError:option1=M
-								if option1 not in range(len(options1)):util.clear();print(Center.Center(menu1,50)+B*3);print(Center.XCenter(util.log(_E,N,_B),50));Sleep(2.5);continue
+								menu1,options1=util.menu(*os.listdir(path),Q);util.clear();print(Center.Center(menu1,50)+B*3)
+								try:option1=int(input(Center.XCenter(util.log(_A,M,_B),50)))-1
+								except ValueError:option1=N
+								if option1 not in range(len(options1)):util.clear();print(Center.Center(menu1,50)+B*3);print(Center.XCenter(util.log(_E,O,_B),50));Sleep(2.5);continue
 								with open(os.path.join(path,os.listdir(path)[option1]),'r+')as file:
-									util.clear();message=load(file);ignored=[W]
+									util.clear();message=load(file);ignored=[X]
 									for a in message:
 										if a in ignored:continue
 										util.log(_A,f"{a}: {message[a]}")
 									file.close();print(D)
 								while _C:
-									choice=input(util.log(_G,b,_B),50).lower()
+									choice=input(util.log(_G,c,_B),50).lower()
 									if choice==A:break
 									elif choice==C:continue
 					if option==1:
 						while _C:
-							try:iterations=int(input(util.log(_A,h,_B)));break
+							try:iterations=int(input(util.log(_A,j,_B)));break
 							except:pass
 						if not message:
-							content=input(util.log(_A,Q,_B))
+							content=input(util.log(_A,R,_B))
 							while _C:
-								choice=input(util.log(_A,R,_B)).lower()
+								choice=input(util.log(_A,S,_B)).lower()
 								if choice==A:
-									file=c.format(len(os.listdir(K)))
-									with open(file,S)as w:data={};data[E]=content;dump(data,w);w.close()
+									file=d.format(len(os.listdir(L)))
+									with open(file,T)as w:data={};data[E]=content;dump(data,w);w.close()
 									break
 								elif choice==C:break
 						else:content=message[E]
 						success=0
 						for i in range(iterations):
 							response,e=await webhook.send(content=content)
-							if response:success+=1;util.log(_F,T)
+							if response:success+=1;util.log(_F,U)
 							else:util.log(_E,f"An error has occured: {e}.")
-						util.log(_A,f"Finished sending {iterations} messages. ({success} message{U if success>1 else _D} succeeded, {iterations-success} message{U if success>1 else _D} failed)");input(util.log(_A,G,_B));continue
+						util.log(_A,f"Finished sending {iterations} messages. ({success} message{V if success>1 else _D} succeeded, {iterations-success} message{V if success>1 else _D} failed)");input(util.log(_A,G,_B));continue
 					elif option==2:
 						while _C:
-							try:iterations=int(input(util.log(_A,h,_B)));break
+							try:iterations=int(input(util.log(_A,j,_B)));break
 							except:pass
 						if not message:
-							embed=discord.Embed();embed.title=input(util.log(_A,d,_B));embed.description=input(util.log(_A,f,_B));content=input(util.log(_A,Q,_B))
+							embed=discord.Embed();embed.title=input(util.log(_A,f,_B));embed.description=input(util.log(_A,g,_B));content=input(util.log(_A,R,_B))
 							while _C:
-								choice=input(util.log(_A,R,_B)).lower()
+								choice=input(util.log(_A,S,_B)).lower()
 								if choice==A:
-									file=g.format(len(os.listdir(J)))
-									with open(file,S)as w:data=embed.to_dict();data[E]=content;dump(data,w);w.close()
+									file=h.format(len(os.listdir(K)))
+									with open(file,T)as w:data=embed.to_dict();data[E]=content;dump(data,w);w.close()
 									break
 								elif choice==C:break
 						else:embed=discord.Embed().from_dict(message);content=message[E]
 						success=0
 						for i in range(iterations):
 							response,e=await webhook.send(content=content,embed=embed)
-							if response:success+=1;util.log(_F,T)
+							if response:success+=1;util.log(_F,U)
 							else:util.log(_E,f"An error has occured: {e}.")
-						util.log(_A,f"Finished sending {iterations} messages. ({success} message{U if success>1 else _D} succeeded, {iterations-success} message{U if success>1 else _D} failed)");input(util.log(_A,G,_B));continue
+						util.log(_A,f"Finished sending {iterations} messages. ({success} message{V if success>1 else _D} succeeded, {iterations-success} message{V if success>1 else _D} failed)");input(util.log(_A,G,_B));continue
 					elif option==0:break
 			elif option==3:
 				while _C:
@@ -233,20 +250,20 @@ async def main():
 					if response:util.log(_F,'Successfully deleted webhook.');input(util.log(_A,G,_B));break
 					else:util.log(_E,f"An error has occured: {e}.");input(util.log(_A,G,_B));continue
 			elif option==4:
-				data=await webhook.get();print(D*3);wtype=data[W]
+				data=await webhook.get();print(D*3);wtype=data[X]
 				if wtype==1:wtypestr='Incoming Webhook'
 				elif wtype==2:wtypestr='Channel Follower Webhook'
 				elif wtype==3:wtypestr='Application Webhook'
 				else:wtypestr='Unknown Webhook Type'
-				util.log(_A,f"General Webhook Information:");util.log(_A,f"Name: {data[O]}");util.log(_A,f"Type: {wtype} ({wtypestr})");util.log(_A,f"ID: {data[F]}");util.log(_A,f"Token: {data['token']}");util.log(_A,f"Guild ID: {data['guild_id']}");util.log(_A,f"Channel ID: {data['channel_id']}");util.log(_A,f"Application ID: {data['application_id']}");util.log(_A,f"Avatar: {data[V]} (https://cdn.discordapp.com/avatars/{data[F]}/{data[V]}.png)")
-				if wtype in[1,2]:print(D);util.log(_A,f"User Information:");util.log(_A,f"Username: {data[H][j]}");util.log(_A,f"Discriminator: {data[H]['discriminator']}");util.log(_A,f"ID: {data[H][F]}");util.log(_A,f"Avatar: {data[H][V]} (https://cdn.discordapp.com/avatars/{data[H][F]}/{data[H][V]}.png)");util.log(_A,f"Public Flags: {data[H]['public_flags']}")
-				if wtype==2:print(D);util.log(_A,f"Source Information:");util.log(_A,f"Guild ID: {data[I][F]}");util.log(_A,f"Guild Name: {data[I][O]}");util.log(_A,f"Guild Icon: {data[I][k]} (https://cdn.discordapp.com/icons/{data[I][F]}/{data[I][k]}.png)");util.log(_A,f"Guild ID: {data[I][F]}");util.log(_A,f"Channel ID: {data[l][F]}");util.log(_A,f"Channel Name: {data[l][O]}")
+				util.log(_A,f"General Webhook Information:");util.log(_A,f"Name: {data[J]}");util.log(_A,f"Type: {wtype} ({wtypestr})");util.log(_A,f"ID: {data[F]}");util.log(_A,f"Token: {data['token']}");util.log(_A,f"Guild ID: {data['guild_id']}");util.log(_A,f"Channel ID: {data['channel_id']}");util.log(_A,f"Application ID: {data['application_id']}");util.log(_A,f"Avatar: {data[W]} (https://cdn.discordapp.com/avatars/{data[F]}/{data[W]}.png)")
+				if wtype in[1,2]:print(D);util.log(_A,f"User Information:");util.log(_A,f"Username: {data[H][k]}");util.log(_A,f"Discriminator: {data[H]['discriminator']}");util.log(_A,f"ID: {data[H][F]}");util.log(_A,f"Avatar: {data[H][W]} (https://cdn.discordapp.com/avatars/{data[H][F]}/{data[H][W]}.png)");util.log(_A,f"Public Flags: {data[H]['public_flags']}")
+				if wtype==2:print(D);util.log(_A,f"Source Information:");util.log(_A,f"Guild ID: {data[I][F]}");util.log(_A,f"Guild Name: {data[I][J]}");util.log(_A,f"Guild Icon: {data[I][l]} (https://cdn.discordapp.com/icons/{data[I][F]}/{data[I][l]}.png)");util.log(_A,f"Guild ID: {data[I][F]}");util.log(_A,f"Channel ID: {data[m][F]}");util.log(_A,f"Channel Name: {data[m][J]}")
 				print(D);input(util.log(_A,G,_B));continue
 			elif option==5:
 				username=input(util.log(_A,'Enter new username: ',_B))
 				if username=='':util.log(_A,'No new username found, not proceeding...')
 				else:
-					response,e=await webhook.update({j:username})
+					response,e=await webhook.update({k:username})
 					if response:util.log(_F,'Successfully updated webhook.')
 					else:util.log(_E,f"An error has occured: {e}.")
 				print(D);input(util.log(_A,G,_B))

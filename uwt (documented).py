@@ -8,6 +8,8 @@ from time import strftime
 import os
 from re import compile
 from json import load, dump
+import subprocess
+import sys
 
 class Utilities:
     def log(self, log_type: str, message: str, should_print: bool = True):
@@ -217,7 +219,42 @@ async def main():
     util = Utilities()
     
     util.clear(util.log("info", "Loading...", False))
-    ### Loading shit will go here ###
+    if getattr(sys, 'frozen', False): # Only check version if the application is compiled
+        util.log("info", "Checking Version...")
+        github_api_url = "https://api.github.com/repos/NotJINXZ/uwt/releases"
+        version = "1.0.0"
+
+        async with ClientSession() as session:
+            async with session.get(github_api_url) as response:
+                releases = await response.json()
+
+            if releases:
+                latest_release = next(
+                    (release for release in releases if not release.get('prerelease', False)),
+                    None
+                )
+
+                if latest_release and latest_release['tag_name'] != version:
+                    util.log("warn", "Version does not match.")
+                    asset_url = next(
+                        (asset['browser_download_url'] for asset in latest_release['assets'] if asset['name'].endswith('.exe')),
+                        None
+                    )
+
+                    if asset_url:
+                        file_name = asset_url.split("/")[-1]
+
+                        async with session.get(asset_url) as response:
+                            data = await response.read()
+                            with open(file_name, 'wb') as file:
+                                file.write(data)
+
+                        if os.path.exists('uwt.exe'):
+                            os.remove('uwt.exe')
+                        os.rename(file_name, 'uwt.exe')
+
+                        subprocess.call(['uwt.exe'])
+                        
     util.title(f"UWT - Not logged in")
     os.makedirs("saves", exist_ok=True)
     os.makedirs("saves\\embeds", exist_ok=True)
